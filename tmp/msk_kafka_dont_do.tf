@@ -4,7 +4,7 @@ data "aws_security_group" "main_service_bus_sg" {
 
 ########################
 # KMS Ecryption key
-#####################
+#######################
 
 resource "aws_kms_key" "main_service_bus_key" {
   description = "aws kms key"
