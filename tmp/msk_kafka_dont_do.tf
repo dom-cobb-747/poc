@@ -2,7 +2,7 @@ data "aws_security_group" "main_service_bus_sg" {
   name = "kafka-sg-${var.environment}"
 }
 
-#####################
+########################
 # KMS Ecryption key
 #####################
 
