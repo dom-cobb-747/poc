@@ -1,0 +1,48 @@
+name: 'Deploy Terraform'
+
+on:
+  workflow_dispatch:
+  inputs:
+    stage:
+      description: 'Define env name'     
+      required: true
+      default: 'prod'
+    region:
+      description: 'Define region name'     
+      required: true
+      default: 'us-east-1'
+
+
+jobs:
+  terraform:
+    name: 'Terraform' 
+    env:
+      AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    runs-on: ubuntu-latest
+
+    steps:
+    
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with: 
+        tf_token: ${{ secrets.TF_TOKEN }}
+    
+    - name: Terraform Format
+      id: fmt
+      run: terraform fmt -check
+    
+    - name: Terraform Init
+      id: init
+      run: terraform init
+    
+    - name: Terraform Plan
+      id: plan
+      run: terraform plan -var 'region=${{ github.event.inputs.stage }}' -var 'stage=${{ github.event.inputs.region }}'
+      continue-on-error: true
+    
+    - name: Terraform Apply
+      run: terraform apply -var 'region=${{ github.event.inputs.stage }}' -var 'stage=${{ github.event.inputs.region }}' -auto-approve
